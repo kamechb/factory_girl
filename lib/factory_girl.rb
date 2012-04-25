@@ -9,6 +9,7 @@ require "factory_girl/strategy/create"
 require "factory_girl/strategy/attributes_for"
 require "factory_girl/strategy/stub"
 require "factory_girl/strategy/null"
+require "factory_girl/strategy_class_builder"
 require 'factory_girl/disallows_duplicates_registry'
 require 'factory_girl/registry'
 require 'factory_girl/null_factory'
@@ -97,6 +98,12 @@ module FactoryGirl
         end
       end
     end
+  end
+
+  def self.register_dynamic_strategy(strategy_name, &block)
+    strategy_class = StrategyClassBuilder.new(block).to_strategy_class
+
+    register_strategy(strategy_name, strategy_class)
   end
 
   def self.strategy_by_name(name)
