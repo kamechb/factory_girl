@@ -5,6 +5,7 @@ describe "callbacks" do
     define_model("User", first_name: :string, last_name: :string)
 
     FactoryGirl.define do
+      sequence(:awesome)
       factory :user_with_callbacks, class: :user do
         after_stub   { |user| user.first_name = 'Stubby' }
         after_build  { |user| user.first_name = 'Buildy' }
@@ -43,5 +44,16 @@ describe "callbacks" do
   it "runs child callback after parent callback" do
     user = FactoryGirl.build(:user_with_inherited_callbacks)
     user.first_name.should == 'Child-Buildy'
+  end
+
+  it "does crazy things" do
+    FactoryGirl.define do
+      factory :awesome_user, class: :user do
+        after_build {|user| user.first_name = generate(:awesome) }
+      end
+    end
+
+    FactoryGirl.build(:awesome_user).first_name.should == 1
+    FactoryGirl.build(:awesome_user).first_name.should == 2
   end
 end
